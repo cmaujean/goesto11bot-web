@@ -26,3 +26,34 @@ get '/' do
     }
   )
 end
+
+get '/dump' do
+  dump_ary = []
+
+  these_results = Tire.search('louds') do
+    query do 
+      all
+    end
+  end.results
+
+  these_results = Tire.search('louds') do
+    query do
+      all
+    end
+    size these_results.total
+  end.results
+
+  these_results.each do |item|
+    dump_ary.push(
+      {
+        "loud"    => item[:loud],
+        "channel" => item[:channel],
+        "nick"    => item[:nick],
+        "score"   => item[:score]
+      }
+    )
+  end
+
+  response["Content-Type"] = "application/json"
+  return Yajl.dump(dump_ary)
+end
